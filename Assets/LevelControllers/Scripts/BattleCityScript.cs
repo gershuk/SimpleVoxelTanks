@@ -58,8 +58,9 @@ namespace SimpleVoxelTanks.LevelControllers
             if (MapBuilder == null)
                 throw new NullReferenceException($"{nameof(MapBuilder)} is null");
 
-            var enemyBases = MapBuilder.Teams[0].Bases;
-            var targetBase = MapBuilder[enemyBases[UnityEngine.Random.Range(0, enemyBases.Count)]].GetComponent<DiscretPhysicalBody>();
+            if (PlayerController == null)
+                throw new NullReferenceException($"{nameof(PlayerController)} is null");
+
             while (EnemyTickets > 0)
             {
                 foreach (var _ in MapBuilder.Teams[1].SpawnPoints)
@@ -67,14 +68,9 @@ namespace SimpleVoxelTanks.LevelControllers
                     if (LiveEnemy >= MaxLiveEnemies)
                         break;
 
-                    if (PlayerController == null)
-                        throw new NullReferenceException($"{nameof(PlayerController)} is null");
-
-                    var tank = SpawnEnemyTank(UnityEngine.Random.Range(0, 2) is 0 || PlayerController.TankDiscreteModel == null
-                        ? targetBase
-                        : PlayerController.TankDiscreteModel);
-
-                    if (tank != null)
+                    var target = GetBotTarget();
+                    SpawnEnemyTank(target);
+                    if (target != null)
                         EnemyTickets--;
 
                     if (EnemyTickets == 0)
@@ -84,7 +80,7 @@ namespace SimpleVoxelTanks.LevelControllers
             }
         }
 
-        protected GameObject? SpawnEnemyTank (DiscretPhysicalBody discretPhysicalBody)
+        protected GameObject? SpawnEnemyTank (DiscretPhysicalBody? discretPhysicalBody)
         {
             if (MapBuilder == null)
                 throw new NullReferenceException($"{nameof(MapBuilder)} is null");
@@ -105,6 +101,7 @@ namespace SimpleVoxelTanks.LevelControllers
 
                 ((AbstractTankAI) tank.AddComponent(AiTypes[0])).Init(tank.GetComponent<TankDiscreteModel>(),
                                                                       1,
+                                                                      (o) => GetBotTarget(),
                                                                       discretPhysicalBody);
                 LiveEnemy++;
             }
@@ -128,6 +125,25 @@ namespace SimpleVoxelTanks.LevelControllers
         }
 
         protected WASDTankController SpwanController () => new GameObject("PlayerController").AddComponent<WASDTankController>();
+
+        public DiscretPhysicalBody? GetBotTarget ()
+        {
+            if (MapBuilder == null)
+                throw new NullReferenceException($"{nameof(MapBuilder)} is null");
+
+            if (PlayerController == null)
+                throw new NullReferenceException($"{nameof(PlayerController)} is null");
+
+            var enemyBases = MapBuilder.Teams[0].Bases;
+            var targetBase = MapBuilder[enemyBases[UnityEngine.Random.Range(0, enemyBases.Count)]];
+
+            return UnityEngine.Random.Range(0, 2) switch
+            {
+                1 when PlayerController.TankDiscreteModel != null => PlayerController.TankDiscreteModel,
+                0 when targetBase != null => targetBase.GetComponent<DiscretPhysicalBody>(),
+                _ => null
+            };
+        }
 
         public override void Init (AbstractMapBuilder abstractMapBuilder)
         {

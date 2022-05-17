@@ -39,16 +39,21 @@ namespace SimpleVoxelTanks.TanksAI
 
             if (!(TankDiscreteModel.IsRotating || TankDiscreteModel.IsRotating))
             {
-                if (PhysicalSystem.FixedUpdateFrameNumber - _tickPathFindCooldown > _lastPathTickNumber && Target != null)
+                if (PhysicalSystem.FixedUpdateFrameNumber - _tickPathFindCooldown > _lastPathTickNumber)
                 {
-                    _path = PathFinder.AStar(TankDiscreteModel,
-                                                  new() { Target.DiscreteTransform.Position },
-                                                  Movement,
-                                                  true,
-                                                  TankDiscreteModel.ShootCooldown,
-                                                  TankDiscreteModel.BulletPrefab.GetComponent<Bullet>().DamagePoints);
-                    _lastPathTickNumber = PhysicalSystem.FixedUpdateFrameNumber;
-                    _wayPointindex = 1;
+                    if (Target == null)
+                        Target = GetNewTarget(gameObject);
+                    if (Target != null)
+                    {
+                        _path = PathFinder.AStar(TankDiscreteModel,
+                                                      new() { Target.DiscreteTransform.Position },
+                                                      Movement,
+                                                      true,
+                                                      TankDiscreteModel.ShootCooldown,
+                                                      TankDiscreteModel.BulletPrefab.GetComponent<Bullet>().DamagePoints);
+                        _lastPathTickNumber = PhysicalSystem.FixedUpdateFrameNumber;
+                        _wayPointindex = 1;
+                    }
                 }
 
                 if (_path?.Count > 1)
@@ -78,9 +83,12 @@ namespace SimpleVoxelTanks.TanksAI
             };
         }
 
-        public override void Init (TankDiscreteModel tankDiscreteModel, uint team, DiscretPhysicalBody target)
+        public override void Init (TankDiscreteModel tankDiscreteModel,
+                                   uint team,
+                                   Func<GameObject, DiscretPhysicalBody?> getNewTarget,
+                                   DiscretPhysicalBody? target = default)
         {
-            base.Init(tankDiscreteModel, team, target);
+            base.Init(tankDiscreteModel, team, getNewTarget, target);
             _tickPathFindCooldown = Math.Max(TankDiscreteModel.MovementTicks, TankDiscreteModel.RotationTicks);
         }
     }
