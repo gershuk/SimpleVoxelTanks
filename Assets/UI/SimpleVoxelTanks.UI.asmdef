@@ -1,0 +1,18 @@
+{
+    "name": "SimpleVoxelTanks.UI",
+    "rootNamespace": "",
+    "references": [
+        "GUID:87ddc2cdf11fc70478095399d7b09157",
+        "GUID:51b93e5faafb8c94fbb754756e277ed5",
+        "GUID:75469ad4d38634e559750d17036d5f7c"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

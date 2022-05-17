@@ -1,0 +1,19 @@
+{
+    "name": "SimpleVoxelTanks.TanksAI",
+    "rootNamespace": "SimpleVoxelTanks.TanksAI",
+    "references": [
+        "GUID:ba520a0976c2eba43bf039f7988d5308",
+        "GUID:d2ea03d685a9c1943816ad70bc424579",
+        "GUID:35baeb52c9b371d42ab7c4ea02c9456e",
+        "GUID:6c2d0dcfd3f02e3439c537f4e87622e9"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

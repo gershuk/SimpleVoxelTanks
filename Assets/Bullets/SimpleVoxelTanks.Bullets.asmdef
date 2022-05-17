@@ -1,0 +1,16 @@
+{
+    "name": "SimpleVoxelTanks.Bullets",
+    "rootNamespace": "SimpleVoxelTanks.Bullets",
+    "references": [
+        "GUID:35baeb52c9b371d42ab7c4ea02c9456e"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

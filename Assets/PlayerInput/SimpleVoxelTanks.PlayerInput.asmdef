@@ -1,0 +1,18 @@
+{
+    "name": "SimpleVoxelTanks.PlayerInput",
+    "rootNamespace": "SimpleVoxelTanks.PlayerInput",
+    "references": [
+        "GUID:75469ad4d38634e559750d17036d5f7c",
+        "GUID:d2ea03d685a9c1943816ad70bc424579",
+        "GUID:ba520a0976c2eba43bf039f7988d5308"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

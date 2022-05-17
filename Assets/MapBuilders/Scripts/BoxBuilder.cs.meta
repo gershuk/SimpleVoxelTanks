@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: 4552973e268fe7b4f9a02ff7c46db32f
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - _destructibleWall: {fileID: 2164413410948256625, guid: f8008ed8f5e0c254484198f6270b9a80, type: 3}
+  - _ground: {fileID: 2164413410948256625, guid: 0c8bc76a72751534092c6ccd207f50a5, type: 3}
+  - _nonDestructibleWall: {fileID: 2164413410948256625, guid: 12fda8286fa30da45933e08e5352586f, type: 3}
+  - _basePrefab: {fileID: 2164413410948256625, guid: fe4d3c50151d3c1439a91de7f57d8127, type: 3}
+  - _tankPrefab: {fileID: 5491300878351411266, guid: cf37250f9f1b3554db6e1a9809893bf6, type: 3}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

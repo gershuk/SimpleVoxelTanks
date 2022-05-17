@@ -1,0 +1,21 @@
+{
+    "name": "Simple.VoxelTanks.LevelControllers",
+    "rootNamespace": "SimpleVoxelTanks.LevelControllers",
+    "references": [
+        "GUID:51b93e5faafb8c94fbb754756e277ed5",
+        "GUID:ba520a0976c2eba43bf039f7988d5308",
+        "GUID:35baeb52c9b371d42ab7c4ea02c9456e",
+        "GUID:734e5d9d8aeb35f4d88fc8a8ac68a002",
+        "GUID:d2ea03d685a9c1943816ad70bc424579",
+        "GUID:6d12d4fe13cbcb34b96708f5f3394e31"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
