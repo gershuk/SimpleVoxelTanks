@@ -32,11 +32,25 @@ namespace SimpleVoxelTanks.MapBuilders
 
         private void BuildObstacleWalls ()
         {
-            for (var w = 1u; w < Size.X - 1; ++w)
+            const uint size = 5;
+            Vector3UInt center = new(Size.X / 2, 1, Size.Z / 2);
+            Vector3UInt min = new((uint) (center.X - Size.X / size + 1), 1, (uint) (center.Z - Size.Z / size + 1));
+            Vector3UInt max = new((uint) (center.X + Size.X / size - 1), 1, (uint) (center.Z + Size.Z / size - 1));
+
+            for (var x = 3u; x < Size.X - 3; ++x)
             {
-                for (var h = 3u; h < Size.Z - 3; ++h)
+                for (var z = 4u; z < Size.Z - 4; ++z)
                 {
-                    TrySpawnBlock(_destructibleWall, new(w, 1, h));
+                    if (min.X - 1 > x || x > max.X + 1 || min.Z - 1 > z || z > max.Z + 1)
+                        TrySpawnBlock(_destructibleWall, new(x, 1, z));
+                }
+            }
+
+            for (var x = min.X; x <= max.X; ++x)
+            {
+                for (var z = min.Z; z <= max.Z; ++z)
+                {
+                    TrySpawnBlock(_nonDestructibleWall, new(x, 1, z));
                 }
             }
         }
