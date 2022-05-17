@@ -163,7 +163,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a68055e1703f2aa4aacc01aa847433a2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _movementTicks: 20
+  _movementTicks: 40
   _rotationTicks: 10
   _bulletPrefab: {fileID: 3438252595714836262, guid: 38a60f691e2dcf74f8d4e37a9607c970, type: 3}
   _bulletSpawnPoint: {fileID: 1991234823942097936}
