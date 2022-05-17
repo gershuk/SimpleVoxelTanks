@@ -16,7 +16,8 @@ namespace SimpleVoxelTanks.LevelControllers
         protected Camera _camera;
         protected CameraFolower _cameraFolower;
 
-        protected GameObject _tankPrefab;
+        protected GameObject _enemyTankPrefab;
+        protected GameObject _playerTankPrefab;
 
         public const int TeamsCount = 2;
         public static readonly int[] BasesCount = { 1, 0 };
@@ -67,7 +68,7 @@ namespace SimpleVoxelTanks.LevelControllers
 
         protected GameObject? SpawnEnemyTank (DiscretPhysicalBody discretPhysicalBody)
         {
-            var tank = MapBuilder.TrySpawnObject(_tankPrefab, 1, Direction.Down);
+            var tank = MapBuilder.TrySpawnObject(_enemyTankPrefab, 1, Direction.Down);
             if (tank != null)
             {
                 var damageableObject = tank.GetComponent<DamageableObject>();
@@ -90,7 +91,7 @@ namespace SimpleVoxelTanks.LevelControllers
 
         protected GameObject? SpawnPlayerTank ()
         {
-            var tank = MapBuilder.TrySpawnObject(_tankPrefab, 0);
+            var tank = MapBuilder.TrySpawnObject(_playerTankPrefab, 0);
             if (tank != null)
             {
                 var damageableObject = tank.GetComponent<DamageableObject>();
@@ -112,7 +113,8 @@ namespace SimpleVoxelTanks.LevelControllers
             _cameraFolower = cameraObject.AddComponent<CameraFolower>();
 
             _aiTypes = new[] { typeof(AStarAI) };
-            _tankPrefab ??= Resources.Load<GameObject>("Prefabs/SimpleTank");
+            _enemyTankPrefab ??= Resources.Load<GameObject>("Prefabs/SimpleTank");
+            _playerTankPrefab ??= Resources.Load<GameObject>("Prefabs/SpeedTank");
             PhysicalSystem.Init(Size);
             MapBuilder = abstractMapBuilder;
             MapBuilder.Init(Size, TeamsCount, BasesCount);
