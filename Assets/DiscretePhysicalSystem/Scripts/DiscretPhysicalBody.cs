@@ -1,3 +1,6 @@
+#nullable enable
+
+using System;
 using System.Collections;
 
 using SimpleVoxelTanks.CommonComponents;
@@ -8,8 +11,6 @@ namespace SimpleVoxelTanks.DiscretePhysicalSystem
 {
     public class DiscretPhysicalBody : MonoBehaviour
     {
-        private GameObject _gameObject;
-
         [SerializeField]
         private uint _movementTicks = 1;
 
@@ -25,10 +26,13 @@ namespace SimpleVoxelTanks.DiscretePhysicalSystem
         public uint RotationTicks { get => _rotationTicks; set => _rotationTicks = value; }
         public Vector3UInt? TransaltingPosition { get => _transaltingPosition; private set => _transaltingPosition = value; }
 
-        protected virtual void Awake () => (_transform, _gameObject) = (transform, gameObject);
+        protected virtual void Awake () => _transform = transform;
 
         protected void OnDestroy ()
         {
+            if (PhysicalSystem.ColliderGrid == null)
+                throw new NullReferenceException($"PhysicalSystem.ColliderGrid is null");
+
             PhysicalSystem.ColliderGrid.UnregisterBody(this);
             StopAllCoroutines();
         }
@@ -51,6 +55,9 @@ namespace SimpleVoxelTanks.DiscretePhysicalSystem
 
         protected IEnumerator Translate (Vector3UInt newPosition)
         {
+            if (PhysicalSystem.ColliderGrid == null)
+                throw new NullReferenceException($"PhysicalSystem.ColliderGrid is null");
+
             TransaltingPosition = newPosition;
             IsTranslating = true;
             var startFrameNumber = PhysicalSystem.FixedUpdateFrameNumber;
@@ -80,6 +87,9 @@ namespace SimpleVoxelTanks.DiscretePhysicalSystem
 
         protected bool TryTranslate (Vector3UInt newPosition)
         {
+            if (PhysicalSystem.ColliderGrid == null)
+                throw new NullReferenceException($"PhysicalSystem.ColliderGrid is null");
+
             if (PhysicalSystem.ColliderGrid.TryMove(this, newPosition, MovementTicks) && !IsTranslating)
             {
                 StartCoroutine(Translate(newPosition));
@@ -90,6 +100,9 @@ namespace SimpleVoxelTanks.DiscretePhysicalSystem
 
         public void Init (Vector3UInt position, Direction direction = default)
         {
+            if (PhysicalSystem.ColliderGrid == null)
+                throw new NullReferenceException($"PhysicalSystem.ColliderGrid is null");
+
             _transform.position = position;
             _transform.eulerAngles = direction.DirectionToEulerAngles();
             DiscreteTransform = new DiscreteTransform(position, direction);

@@ -1,3 +1,5 @@
+#nullable enable
+
 using System;
 
 using SimpleVoxelTanks.CommonComponents;
@@ -11,16 +13,19 @@ namespace SimpleVoxelTanks.MapBuilders
         #region Prefabs
 
         private readonly GameObject[] _basesBlocks = new GameObject[2];
-        private GameObject _destructibleWall;
-        private GameObject _ground;
-        private GameObject _nonDestructibleWall;
+        private GameObject? _destructibleWall;
+        private GameObject? _ground;
+        private GameObject? _nonDestructibleWall;
 
         #endregion Prefabs
 
-        private int[] _teamsBaseCount;
+        private int[]? _teamsBaseCount;
 
         private void BuildGround ()
         {
+            if (_ground == null)
+                throw new NullReferenceException($"{nameof(_ground)} is null");
+
             for (var w = 0u; w < Size.X; ++w)
             {
                 for (var z = 0u; z < Size.Z; ++z)
@@ -36,6 +41,12 @@ namespace SimpleVoxelTanks.MapBuilders
             Vector3UInt center = new(Size.X / 2, 1, Size.Z / 2);
             Vector3UInt min = new((uint) (center.X - Size.X / size + 1), 1, (uint) (center.Z - Size.Z / size + 1));
             Vector3UInt max = new((uint) (center.X + Size.X / size - 1), 1, (uint) (center.Z + Size.Z / size - 1));
+
+            if (_destructibleWall == null)
+                throw new NullReferenceException($"{nameof(_destructibleWall)} is null");
+
+            if (_nonDestructibleWall == null)
+                throw new NullReferenceException($"{nameof(_nonDestructibleWall)} is null");
 
             for (var x = 3u; x < Size.X - 3; ++x)
             {
@@ -57,6 +68,9 @@ namespace SimpleVoxelTanks.MapBuilders
 
         private void BuildWorldBorderWalls ()
         {
+            if (_nonDestructibleWall == null)
+                throw new NullReferenceException($"{nameof(_nonDestructibleWall)} is null");
+
             for (var w = 0u; w < Size.X; ++w)
             {
                 TrySpawnBlock(_nonDestructibleWall, new(w, 1, 0));
@@ -72,6 +86,9 @@ namespace SimpleVoxelTanks.MapBuilders
 
         private void InitTeams ()
         {
+            if (_destructibleWall == null)
+                throw new NullReferenceException($"{nameof(_destructibleWall)} is null");
+
             uint[] z = { 1, Size.Z - 2 };
             var baseWallOffset = new[]
             {
@@ -87,6 +104,9 @@ namespace SimpleVoxelTanks.MapBuilders
                     new(Size.X / 2 - 2, 1, z[i]),
                     new(Size.X / 2 + 2, 1, z[i]),
                 };
+
+                if (_teamsBaseCount == null)
+                    throw new NullReferenceException($"{nameof(_teamsBaseCount)} is null");
 
                 var bases = new Vector3UInt[_teamsBaseCount[i]];
                 if (bases.Length > 0)
@@ -118,11 +138,20 @@ namespace SimpleVoxelTanks.MapBuilders
 
         public override void Init (uint x, uint y, uint z, int teamsCount, int[] teamsBaseCount)
         {
-            _basesBlocks[0] ??= Resources.Load<GameObject>("Prefabs/RedFlag");
-            _basesBlocks[1] ??= Resources.Load<GameObject>("Prefabs/BlueFlag");
-            _nonDestructibleWall ??= Resources.Load<GameObject>("Prefabs/StoneBlock");
-            _destructibleWall ??= Resources.Load<GameObject>("Prefabs/BrickBlock");
-            _ground ??= Resources.Load<GameObject>("Prefabs/GrassBlock");
+            if (_basesBlocks[0] == null)
+                _basesBlocks[0] = Resources.Load<GameObject>("Prefabs/RedFlag");
+
+            if (_basesBlocks[1] == null)
+                _basesBlocks[1] = Resources.Load<GameObject>("Prefabs/BlueFlag");
+
+            if (_nonDestructibleWall == null)
+                _nonDestructibleWall = Resources.Load<GameObject>("Prefabs/StoneBlock");
+
+            if (_destructibleWall == null)
+                _destructibleWall = Resources.Load<GameObject>("Prefabs/BrickBlock");
+
+            if (_ground == null)
+                _ground = Resources.Load<GameObject>("Prefabs/GrassBlock");
 
             if (x < 7 || y < 2 || z < 7)
                 throw new BadMapSizeException(new(x, y, z), new(10, 2, 10));

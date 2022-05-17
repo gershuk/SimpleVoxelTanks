@@ -1,3 +1,5 @@
+#nullable enable
+
 using SimpleVoxelTanks.DiscretePhysicalSystem;
 using SimpleVoxelTanks.Tanks;
 
@@ -10,7 +12,9 @@ namespace SimpleVoxelTanks.PlayerInput
         [SerializeField]
         private TankDiscreteModel _body;
 
+#pragma warning disable CS8618 // Поле, не допускающее значения NULL, должно содержать значение, отличное от NULL, при выходе из конструктора. Возможно, стоит объявить поле как допускающее значения NULL.
         private WASDInput _inputActions;
+#pragma warning restore CS8618 // Поле, не допускающее значения NULL, должно содержать значение, отличное от NULL, при выходе из конструктора. Возможно, стоит объявить поле как допускающее значения NULL.
 
         protected override void Awake ()
         {
@@ -18,15 +22,9 @@ namespace SimpleVoxelTanks.PlayerInput
             _inputActions = new();
         }
 
-        protected void OnDisable ()
-        {
-            _inputActions.Disable();
-        }
+        protected void OnDisable () => _inputActions.Disable();
 
-        protected void OnEnable ()
-        {
-            _inputActions.Enable();
-        }
+        protected void OnEnable () => _inputActions.Enable();
 
         protected void Update ()
         {

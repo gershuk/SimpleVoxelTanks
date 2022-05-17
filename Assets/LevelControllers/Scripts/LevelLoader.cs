@@ -1,3 +1,5 @@
+#nullable enable
+
 using SimpleVoxelTanks.MapBuilders;
 
 using UnityEngine;
@@ -12,10 +14,7 @@ namespace SimpleVoxelTanks.LevelControllers
         private const string _menuSceneName = "MainMenuScene";
         private const string _winSceneName = "WinScene";
 
-        private void Awake ()
-        {
-            DontDestroyOnLoad(this);
-        }
+        private void Awake () => DontDestroyOnLoad(this);
 
         public void GoToLoseScreen () => SceneManager.LoadScene(_loseSceneName, LoadSceneMode.Single);
 
@@ -24,8 +23,7 @@ namespace SimpleVoxelTanks.LevelControllers
         public void GoToWinScreen () => SceneManager.LoadScene(_winSceneName, LoadSceneMode.Single);
 
         public void LoadLevel<TLevelScript, TMapBuilder> () where TLevelScript : AbstractLevelScript, new()
-                                                            where TMapBuilder : AbstractMapBuilder, new()
-        {
+                                                            where TMapBuilder : AbstractMapBuilder, new() =>
             SceneManager.LoadSceneAsync(_gameSceneName, LoadSceneMode.Single).completed += (op) =>
             {
                 var gameObject = new GameObject("SceneController");
@@ -35,7 +33,6 @@ namespace SimpleVoxelTanks.LevelControllers
                 levelScript.OnWin += GoToWinScreen;
                 levelScript.OnLose += GoToLoseScreen;
             };
-        }
 
         [ContextMenu("BattleCity")]
         public void TestInit () => LoadLevel<BattleCityScript, BoxBuilder>();

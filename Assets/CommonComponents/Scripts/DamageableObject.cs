@@ -1,3 +1,5 @@
+#nullable enable
+
 using System;
 
 using UnityEngine;
@@ -6,9 +8,9 @@ namespace SimpleVoxelTanks.CommonComponents
 {
     public class DamageableObject : MonoBehaviour
     {
-        public event Action OnDied;
+        public event Action? OnDied;
 
-        public event Action<int> OnTakeDamage;
+        public event Action<int>? OnTakeDamage;
 
         [SerializeField]
         private int _healthPoints;
@@ -19,12 +21,20 @@ namespace SimpleVoxelTanks.CommonComponents
         [SerializeField]
         private bool _showHpIfGetDamage;
 
+        #region UnityObjectaComponents
+
+#pragma warning disable CS8618 // Поле, не допускающее значения NULL, должно содержать значение, отличное от NULL, при выходе из конструктора. Возможно, стоит объявить поле как допускающее значения NULL.
         protected GameObject _gameObject;
+#pragma warning restore CS8618 // Поле, не допускающее значения NULL, должно содержать значение, отличное от NULL, при выходе из конструктора. Возможно, стоит объявить поле как допускающее значения NULL.
+
+#pragma warning disable CS8618 // Поле, не допускающее значения NULL, должно содержать значение, отличное от NULL, при выходе из конструктора. Возможно, стоит объявить поле как допускающее значения NULL.
+        protected Transform _transform;
+#pragma warning restore CS8618 // Поле, не допускающее значения NULL, должно содержать значение, отличное от NULL, при выходе из конструктора. Возможно, стоит объявить поле как допускающее значения NULL.
+
+        #endregion UnityObjectaComponents
 
         [SerializeField]
-        protected HpBarController _hpBarController;
-
-        protected Transform _transform;
+        protected HpBarController? _hpBarController;
 
         protected int MaxHealthPoints { get => _maxHealthPoints; set => _maxHealthPoints = value; }
 
@@ -49,7 +59,7 @@ namespace SimpleVoxelTanks.CommonComponents
 
         public bool ShowHealthBar
         {
-            get => _hpBarController != null ? _hpBarController.gameObject.activeInHierarchy : false;
+            get => _hpBarController != null && _hpBarController.gameObject.activeInHierarchy;
             set
             {
                 if (_hpBarController != null)

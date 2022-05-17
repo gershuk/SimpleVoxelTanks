@@ -1,3 +1,5 @@
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 
@@ -9,15 +11,15 @@ namespace SimpleVoxelTanks.LevelControllers
 {
     public abstract class AbstractLevelScript : MonoBehaviour
     {
-        public event Action OnLose;
+        public event Action? OnLose;
 
-        public event Action OnWin;
+        public event Action? OnWin;
 
-        protected Type[] _aiTypes;
+        protected Type[] _aiTypes = Array.Empty<Type>();
 
         public IReadOnlyList<Type> AiTypes => _aiTypes;
 
-        public AbstractMapBuilder MapBuilder { get; protected set; }
+        public AbstractMapBuilder? MapBuilder { get; protected set; }
 
         protected void RiseLoseEvent () => OnLose?.Invoke();
 

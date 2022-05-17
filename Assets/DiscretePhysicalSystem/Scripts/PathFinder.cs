@@ -1,3 +1,6 @@
+#nullable enable
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -30,6 +33,9 @@ namespace SimpleVoxelTanks.DiscretePhysicalSystem
         internal static (Vector3UInt size, WayPoint?[,,] vistedFrom, SortedSet<WayPoint> wayPointsQueue) InitAStarData (DiscretPhysicalBody body,
                                                                                                                         HashSet<Vector3UInt> to)
         {
+            if (PhysicalSystem.ColliderGrid == null)
+                throw new NullReferenceException($"PhysicalSystem.ColliderGrid is null");
+
             var size = PhysicalSystem.ColliderGrid.Size;
             var vistedFrom = new WayPoint?[size.X, size.Y, size.Z];
 
@@ -54,17 +60,27 @@ namespace SimpleVoxelTanks.DiscretePhysicalSystem
             (var size, var vistedFrom, var wayPointsQueue) = InitAStarData(body, to);
             Profiler.EndSample();
 
+            if (PhysicalSystem.ColliderGrid == null)
+                throw new NullReferenceException($"PhysicalSystem.ColliderGrid is null");
+
             while (wayPointsQueue.Count > 0)
             {
                 Profiler.BeginSample("Get Way Point");
                 var wayPoint = wayPointsQueue.First();
                 wayPointsQueue.Remove(wayPoint);
 
+                if (wayPoint.Position == body.DiscreteTransform.Position && vistedFrom[wayPoint.Position.X,
+                                                                                       wayPoint.Position.Y,
+                                                                                       wayPoint.Position.Z].HasValue == false)
+                {
+                    throw new NullReferenceException($"It's not start position, but previous value null.");
+                }
+
                 var lastDelta = wayPoint.Position == body.DiscreteTransform.Position
                                 ? body.DiscreteTransform.Direction.DirectionToDeltaPosition()
                                 : (Vector3Int) wayPoint.Position - vistedFrom[wayPoint.Position.X,
                                                                               wayPoint.Position.Y,
-                                                                              wayPoint.Position.Z].Value.Position;
+                                                                              wayPoint.Position.Z]!.Value.Position;
                 Profiler.EndSample();
 
                 foreach (var move in moveSet)
@@ -88,16 +104,17 @@ namespace SimpleVoxelTanks.DiscretePhysicalSystem
 
                     var state = State.Ignore;
                     Profiler.BeginSample("Check Destory");
-                    var damageableObject = PhysicalSystem.ColliderGrid[newPosition]
-                                                         .DiscretPhysicalBody?
-                                                         .gameObject.GetComponent<DamageableObject>();
+                    var discretPhysicalBody = PhysicalSystem.ColliderGrid[newPosition].DiscretPhysicalBody;
+                    var damageableObject = discretPhysicalBody != null
+                                           ? discretPhysicalBody.gameObject.GetComponent<DamageableObject>()
+                                           : null;
                     var moveAndDestoryTicks = uint.MaxValue;
                     var oldValue = vistedFrom[newPosition.X, newPosition.Y, newPosition.Z];
                     if (canDestory && damageableObject != null)
                     {
                         moveAndDestoryTicks = moveTicks + tickToDestory * (uint) ((damageableObject.HealthPoints - 1) / hpDmgPerTick + 1);
                         if (vistedFrom[newPosition.X, newPosition.Y, newPosition.Z] == null ||
-                            vistedFrom[newPosition.X, newPosition.Y, newPosition.Z].Value.FixedFrameNumber > moveAndDestoryTicks)
+                            vistedFrom[newPosition.X, newPosition.Y, newPosition.Z]!.Value.FixedFrameNumber > moveAndDestoryTicks)
                         {
                             vistedFrom[newPosition.X, newPosition.Y, newPosition.Z] = new(wayPoint.Position, moveAndDestoryTicks);
                             state = State.MoveAndDestory;
@@ -107,7 +124,7 @@ namespace SimpleVoxelTanks.DiscretePhysicalSystem
 
                     Profiler.BeginSample("Check Move");
                     if ((vistedFrom[newPosition.X, newPosition.Y, newPosition.Z] == null
-                         || vistedFrom[newPosition.X, newPosition.Y, newPosition.Z].Value.FixedFrameNumber > moveTicks)
+                         || vistedFrom[newPosition.X, newPosition.Y, newPosition.Z]!.Value.FixedFrameNumber > moveTicks)
                          && PhysicalSystem.ColliderGrid.CanSetCell(body, newPosition, moveTicks))
                     {
                         vistedFrom[newPosition.X, newPosition.Y, newPosition.Z] = new(wayPoint.Position, moveTicks);
@@ -135,7 +152,10 @@ namespace SimpleVoxelTanks.DiscretePhysicalSystem
                             List<Vector3UInt> path = new() { currentPosition };
                             while (currentPosition != body.DiscreteTransform.Position)
                             {
-                                currentPosition = vistedFrom[currentPosition.X, currentPosition.Y, currentPosition.Z].Value.Position;
+                                var from = vistedFrom[currentPosition.X, currentPosition.Y, currentPosition.Z];
+                                if (from.HasValue == false)
+                                    throw new NullReferenceException($"{nameof(from)} is null");
+                                currentPosition = from.Value.Position;
                                 path.Add(currentPosition);
                             }
 

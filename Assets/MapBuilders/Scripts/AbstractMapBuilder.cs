@@ -1,3 +1,5 @@
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 
@@ -31,18 +33,31 @@ namespace SimpleVoxelTanks.MapBuilders
 
         protected virtual GameObject? TrySpawnBlock (GameObject prefab, Vector3UInt position, Direction startDirection = default)
         {
-            this[position] = TrySpawnObject(prefab, position, startDirection);
-            if (this[position] is null)
+            var block = TrySpawnObject(prefab, position, startDirection);
+            if (block == null)
+            {
                 Debug.LogError($"Can't spawn block at {position}");
+                return null;
+            }
+            this[position] = block;
             return this[position];
         }
 
         protected virtual GameObject? TrySpawnObject (GameObject prefab, Vector3UInt position, Direction startDirection = default)
         {
+            if (PhysicalSystem.ColliderGrid == null)
+                throw new NullReferenceException($"PhysicalSystem.ColliderGrid is null");
+
             var gameObject = PhysicalSystem.ColliderGrid.CanSetCell(position)
                         ? Instantiate(prefab, position, Quaternion.Euler(startDirection.DirectionToEulerAngles()), _transform)
                         : null;
-            gameObject?.GetComponent<DiscretPhysicalBody>()?.Init(position, startDirection);
+
+            if (gameObject != null)
+            {
+                var discretPhysicalBody = gameObject.GetComponent<DiscretPhysicalBody>();
+                if (discretPhysicalBody != null)
+                    discretPhysicalBody.Init(position, startDirection);
+            }
             return gameObject;
         }
 
@@ -72,6 +87,9 @@ namespace SimpleVoxelTanks.MapBuilders
 
         public GameObject? TrySpawnObject (GameObject prefab, int teamIndex, Direction startDirection = default)
         {
+            if (PhysicalSystem.ColliderGrid == null)
+                throw new NullReferenceException($"PhysicalSystem.ColliderGrid is null");
+
             foreach (var point in _teams[teamIndex].SpawnPoints)
             {
                 if (PhysicalSystem.ColliderGrid.CanSetCell(point))

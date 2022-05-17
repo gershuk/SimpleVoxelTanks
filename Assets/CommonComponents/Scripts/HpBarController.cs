@@ -1,3 +1,5 @@
+#nullable enable
+
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -32,7 +34,7 @@ namespace SimpleVoxelTanks.CommonComponents
         private void Awake ()
         {
             _transform = transform;
-            _canvas ??= GetComponent<Canvas>();
+            _canvas = _canvas != null ? _canvas : GetComponent<Canvas>();
         }
 
         private void Update ()

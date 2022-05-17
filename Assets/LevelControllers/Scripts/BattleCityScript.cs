@@ -1,3 +1,6 @@
+#nullable enable
+
+using System;
 using System.Collections;
 
 using SimpleVoxelTanks.CommonComponents;
@@ -25,11 +28,16 @@ namespace SimpleVoxelTanks.LevelControllers
         public uint EnemyTickets { get; protected set; } = 12;
         public uint LiveEnemy { get; protected set; } = 0;
         public uint MaxLiveEnemies { get; protected set; } = 4;
-        public WASDTankController PlayerController { get; protected set; }
+        public WASDTankController? PlayerController { get; protected set; }
 
         private void OnPlayerDied ()
         {
-            PlayerController.Init(SpawnPlayerTank()?.GetComponent<TankDiscreteModel>(), 0);
+            if (PlayerController == null)
+                throw new NullReferenceException($"{nameof(PlayerController)} is null");
+
+            var tank = SpawnPlayerTank();
+            if (tank != null)
+                PlayerController.Init(tank.GetComponent<TankDiscreteModel>(), 0);
             if (PlayerController.TankDiscreteModel == null)
                 RiseLoseEvent();
             else
@@ -47,8 +55,11 @@ namespace SimpleVoxelTanks.LevelControllers
 
         protected IEnumerator SpawnEnemys ()
         {
+            if (MapBuilder == null)
+                throw new NullReferenceException($"{nameof(MapBuilder)} is null");
+
             var enemyBases = MapBuilder.Teams[0].Bases;
-            var targetBase = MapBuilder[enemyBases[Random.Range(0, enemyBases.Count)]].GetComponent<DiscretPhysicalBody>();
+            var targetBase = MapBuilder[enemyBases[UnityEngine.Random.Range(0, enemyBases.Count)]].GetComponent<DiscretPhysicalBody>();
             while (EnemyTickets > 0)
             {
                 foreach (var _ in MapBuilder.Teams[1].SpawnPoints)
@@ -56,7 +67,10 @@ namespace SimpleVoxelTanks.LevelControllers
                     if (LiveEnemy >= MaxLiveEnemies)
                         break;
 
-                    var tank = SpawnEnemyTank(Random.Range(0, 2) is 0 || PlayerController.TankDiscreteModel == null
+                    if (PlayerController == null)
+                        throw new NullReferenceException($"{nameof(PlayerController)} is null");
+
+                    var tank = SpawnEnemyTank(UnityEngine.Random.Range(0, 2) is 0 || PlayerController.TankDiscreteModel == null
                         ? targetBase
                         : PlayerController.TankDiscreteModel);
 
@@ -72,29 +86,36 @@ namespace SimpleVoxelTanks.LevelControllers
 
         protected GameObject? SpawnEnemyTank (DiscretPhysicalBody discretPhysicalBody)
         {
+            if (MapBuilder == null)
+                throw new NullReferenceException($"{nameof(MapBuilder)} is null");
+
             var tank = MapBuilder.TrySpawnObject(_enemyTankPrefab, 1, Direction.Down);
             if (tank != null)
             {
                 var damageableObject = tank.GetComponent<DamageableObject>();
-                if (damageableObject != null)
-                    SetUpDamageableObject(damageableObject);
-
-                ((AbstractTankAI) tank.AddComponent(AiTypes[0])).Init(tank.GetComponent<TankDiscreteModel>(),
-                                                                      1,
-                                                                      discretPhysicalBody);
-                LiveEnemy++;
+                if (damageableObject == null)
+                    throw new NullReferenceException($"{nameof(damageableObject)} is null");
+                SetUpDamageableObject(damageableObject);
                 damageableObject.OnDied += () =>
                 {
                     LiveEnemy--;
                     if (LiveEnemy == 0 && EnemyTickets == 0)
                         RiseWinEvent();
                 };
+
+                ((AbstractTankAI) tank.AddComponent(AiTypes[0])).Init(tank.GetComponent<TankDiscreteModel>(),
+                                                                      1,
+                                                                      discretPhysicalBody);
+                LiveEnemy++;
             }
             return tank;
         }
 
         protected GameObject? SpawnPlayerTank ()
         {
+            if (MapBuilder == null)
+                throw new NullReferenceException($"{nameof(MapBuilder)} is null");
+
             var tank = MapBuilder.TrySpawnObject(_playerTankPrefab, 0);
             if (tank != null)
             {
@@ -117,8 +138,8 @@ namespace SimpleVoxelTanks.LevelControllers
             _cameraFolower = cameraObject.AddComponent<CameraFolower>();
 
             _aiTypes = new[] { typeof(AStarAI) };
-            _enemyTankPrefab ??= Resources.Load<GameObject>("Prefabs/SimpleTank");
-            _playerTankPrefab ??= Resources.Load<GameObject>("Prefabs/SpeedTank");
+            _enemyTankPrefab = _enemyTankPrefab != null ? _enemyTankPrefab : Resources.Load<GameObject>("Prefabs/SimpleTank");
+            _playerTankPrefab = _playerTankPrefab != null ? _playerTankPrefab : Resources.Load<GameObject>("Prefabs/SpeedTank");
             PhysicalSystem.Init(Size);
             MapBuilder = abstractMapBuilder;
             MapBuilder.Init(Size, TeamsCount, BasesCount);
@@ -126,15 +147,24 @@ namespace SimpleVoxelTanks.LevelControllers
 
         public override void StartScript ()
         {
+            if (MapBuilder == null)
+                throw new NullReferenceException($"{nameof(MapBuilder)} is null");
+
             MapBuilder.BuildScene();
             PlayerController = SpwanController();
-            PlayerController.Init(SpawnPlayerTank()?.GetComponent<TankDiscreteModel>(), 0);
+            var tank = SpawnPlayerTank();
+            if (tank != null)
+                PlayerController.Init(tank.GetComponent<TankDiscreteModel>(), 0);
+
             StartCoroutine(SpawnEnemys());
 
             var blocks = MapBuilder.GetBlocksArrayCopy();
             foreach (var block in blocks)
             {
-                var damageableObject = block?.GetComponent<DamageableObject>();
+                if (block == null)
+                    continue;
+
+                var damageableObject = block.GetComponent<DamageableObject>();
                 if (damageableObject != null)
                     SetUpDamageableObject(damageableObject, true, true);
             }

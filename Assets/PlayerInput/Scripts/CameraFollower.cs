@@ -1,3 +1,5 @@
+#nullable enable
+
 using UnityEngine;
 
 namespace SimpleVoxelTanks.PlayerInput
@@ -16,10 +18,7 @@ namespace SimpleVoxelTanks.PlayerInput
 
         private Transform _transform;
 
-        private void Awake ()
-        {
-            _transform = transform;
-        }
+        private void Awake () => _transform = transform;
 
         private void FixedUpdate ()
         {

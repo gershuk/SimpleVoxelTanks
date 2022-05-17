@@ -1,3 +1,5 @@
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 
@@ -15,7 +17,7 @@ namespace SimpleVoxelTanks.TanksAI
         [SerializeField]
         private uint _lastPathTickNumber = 0;
 
-        private List<Vector3UInt> _path;
+        private List<Vector3UInt>? _path;
 
         [SerializeField]
         private uint _tickPathFindCooldown = 1;
@@ -37,7 +39,7 @@ namespace SimpleVoxelTanks.TanksAI
 
             if (!(TankDiscreteModel.IsRotating || TankDiscreteModel.IsRotating))
             {
-                if (PhysicalSystem.FixedUpdateFrameNumber - _tickPathFindCooldown > _lastPathTickNumber)
+                if (PhysicalSystem.FixedUpdateFrameNumber - _tickPathFindCooldown > _lastPathTickNumber && Target != null)
                 {
                     _path = PathFinder.AStar(TankDiscreteModel,
                                                   new() { Target.DiscreteTransform.Position },
@@ -79,7 +81,7 @@ namespace SimpleVoxelTanks.TanksAI
         public override void Init (TankDiscreteModel tankDiscreteModel, uint team, DiscretPhysicalBody target)
         {
             base.Init(tankDiscreteModel, team, target);
-            _tickPathFindCooldown = Math.Max(TankDiscreteModel.MovementTicks,TankDiscreteModel.RotationTicks);
+            _tickPathFindCooldown = Math.Max(TankDiscreteModel.MovementTicks, TankDiscreteModel.RotationTicks);
         }
     }
 }

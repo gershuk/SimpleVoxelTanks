@@ -1,3 +1,5 @@
+#nullable enable
+
 using SimpleVoxelTanks.LevelControllers;
 using SimpleVoxelTanks.MapBuilders;
 

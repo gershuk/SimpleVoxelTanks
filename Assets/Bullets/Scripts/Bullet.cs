@@ -1,3 +1,5 @@
+#nullable enable
+
 using SimpleVoxelTanks.CommonComponents;
 
 using UnityEngine;
@@ -45,14 +47,13 @@ namespace SimpleVoxelTanks.Bullets
             Destroy(gameObject, _timeToDestroy);
         }
 
-        protected void FixedUpdate ()
-        {
-            _transform.Translate(Vector3.forward * Speed * Time.fixedDeltaTime);
-        }
+        protected void FixedUpdate () => _transform.Translate(Speed * Time.fixedDeltaTime * Vector3.forward);
 
         protected void OnTriggerEnter (Collider other)
         {
-            other.GetComponent<DamageableObject>()?.TakeDamege(DamagePoints);
+            var damageableObject = other.GetComponent<DamageableObject>();
+            if (damageableObject != null)
+                damageableObject.TakeDamege(DamagePoints);
             Destroy(gameObject);
         }
     }
